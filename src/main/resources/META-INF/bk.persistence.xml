@@ -1,0 +1,40 @@
+<!--<persistence xmlns="http://java.sun.com/xml/ns/persistence"-->
+<!--             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"-->
+<!--             version="2.0">-->
+
+<!--    <persistence-unit name="aspace-tech">-->
+<!--        <provider>org.hibernate.reactive.provider.ReactivePersistenceProvider</provider>  &lt;!&ndash;1&ndash;&gt;-->
+
+<!--        <class>com.codingplayground.springvertx.model.Employee</class> &lt;!&ndash;2&ndash;&gt;-->
+
+<!--        <properties>-->
+
+<!--            &lt;!&ndash; PostgreSQL &ndash;&gt;-->
+<!--            <property name="javax.persistence.jdbc.url"-->
+<!--                      value="jdbc:postgresql://localhost/postgres"/>  &lt;!&ndash;3&ndash;&gt;-->
+
+<!--            &lt;!&ndash; Credentials &ndash;&gt;-->
+<!--            <property name="javax.persistence.jdbc.user"-->
+<!--                      value="postgres"/>-->
+<!--            <property name="javax.persistence.jdbc.password"-->
+<!--                      value="aspace@1234"/>-->
+
+<!--            &lt;!&ndash; The Vert.x SQL Client connection pool size &ndash;&gt;-->
+<!--            <property name="hibernate.connection.pool_size"-->
+<!--                      value="10"/>-->
+
+<!--            &lt;!&ndash; Automatic schema export &ndash;&gt;-->
+<!--            <property name="javax.persistence.schema-generation.database.action"-->
+<!--                      value="drop-and-create"/>-->
+
+<!--            &lt;!&ndash; SQL statement logging &ndash;&gt;-->
+<!--            <property name="hibernate.show_sql" value="true"/>-->
+<!--            <property name="hibernate.format_sql" value="true"/>-->
+<!--            <property name="hibernate.highlight_sql" value="true"/>-->
+
+<!--        </properties>-->
+
+<!--    </persistence-unit>-->
+
+<!--</persistence>-->
