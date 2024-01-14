@@ -14,7 +14,7 @@ public class HelloController implements Consumer<RoutingContext> {
 
     @Autowired
     public HelloController(Router router) {
-        router.get("/").handler(this);
+        router.get("/api").handler(this);
     }
 
     @Override
@@ -23,5 +23,4 @@ public class HelloController implements Consumer<RoutingContext> {
         serverResponse.setStatusCode(HttpResponseStatus.OK.code())
                 .end("Vert.x successfully integrated with springboot").subscribeAsCompletionStage();
     }
-
 }

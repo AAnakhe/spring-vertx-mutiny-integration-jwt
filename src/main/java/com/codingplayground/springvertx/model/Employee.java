@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class Employee {
-
-    private UUID id;
+    private Long id;
     private String name;
+    private String username;
+    private String password;
     private String department;
     private double salary;
 }

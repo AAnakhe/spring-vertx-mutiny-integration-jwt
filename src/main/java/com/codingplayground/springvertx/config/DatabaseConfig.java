@@ -16,6 +16,7 @@ public class DatabaseConfig {
     @Autowired
     public PgPool pgPool(Vertx vertx) {
         PgConnectOptions options = new PgConnectOptions()
+                .setHost("localhost")
                 .setUser("postgres")
                 .setPassword("password")
                 .setDatabase("postgres")
@@ -25,5 +26,4 @@ public class DatabaseConfig {
                 .setMaxSize(5);
         return PgPool.pool(vertx, options, poolOptions);
     }
-
 }

@@ -1,70 +1,53 @@
 package com.codingplayground.springvertx.controller;
 
 import com.codingplayground.springvertx.model.Employee;
+import com.codingplayground.springvertx.model.dal.DalEmployee;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
 import io.vertx.mutiny.ext.web.handler.BodyHandler;
-import io.vertx.mutiny.pgclient.PgPool;
-import io.vertx.mutiny.sqlclient.Row;
-import io.vertx.mutiny.sqlclient.RowSet;
-import io.vertx.mutiny.sqlclient.Tuple;
-
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Controller
-public class CreateEmployeeController implements Consumer<RoutingContext> {
+public class CreateEmployeeController implements Function<RoutingContext, Uni<Void>> {
 
-    private final PgPool pgPool;
+    private static final String CONTENT = "content-type";
+    private static final String JSON_TYPE = "application/json";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateEmployeeController.class);
 
-    public CreateEmployeeController(Router router, PgPool pgPool) {
-        this.pgPool = pgPool;
-        router.post("/addemployee")
+    private final DalEmployee dalEmployee;
 
+    @Autowired
+    public CreateEmployeeController(Router router, DalEmployee dalEmployee) {
+        this.dalEmployee = dalEmployee;
+        router.post("/addEmployee")
                 .handler(BodyHandler.create())
-                .handler(this);
+                .respond(this);
     }
 
     @Override
-    public void accept(RoutingContext ctx) {
-        JsonObject jsonObject = ctx.body().asJsonObject();
-        Employee emp = jsonObject.mapTo(Employee.class);
-
-
-        pgPool.withConnection(conn -> conn.prepare("INSERT INTO Employee (name, department, salary) VALUES ($1, $2, $3) return Id "))
-                .flatMap(preparedStatement -> preparedStatement
-                        .query()
-                        .execute(Tuple.of(emp.getName(), emp.getDepartment(), emp.getSalary()))
-                        .map(RowSet::iterator)
-                        .flatMap(rowRowIterator -> {
-                            if (rowRowIterator.hasNext()) {
-                                Row row = rowRowIterator.next();
-                                return Uni.createFrom().item(new JsonObject().put("emp", row));
-                            } else {
-                                return Uni.createFrom().failure(new RuntimeException("Error: Unable to insert record!"));
-                            }
-                        }));
-
-   /* Uni.createFrom().completionStage( pgPool.getDelegate().preparedQuery("INSERT INTO users (first_name, last_name) VALUES ($1, $2)")
-                .execute(Tuple.of("Julien", "Viet"))
-                .onComplete(ar -> {
-                    if (ar.succeeded()) {
-                        RowSet<Row> rows = ar.result();
-                        System.out.println(rows.rowCount());
+    public Uni<Void> apply(RoutingContext ctx) {
+        Employee emp = ctx.body().asPojo(Employee.class);
+        return dalEmployee.add(emp)
+                .flatMap(employee -> {
+                    if (employee == null) {
+                        return ctx.response().setStatusCode(400)
+                                .putHeader(CONTENT, JSON_TYPE)
+                                .end(new JsonObject().put("message", "Error: Unable to insert record!")
+                                        .encode());
                     } else {
-                        System.out.println("Failure: " + ar.cause().getMessage());
+                        return ctx.response()
+                                .putHeader(CONTENT, JSON_TYPE)
+                                .end(JsonObject.mapFrom(emp)
+                                        .put("message", "Inserted Successful").encode());
                     }
-                }).toCompletionStage()); */
-
-
-
-        ctx.response()
-                .putHeader("content-type", "application/json")
-                .end(jsonObject.encode()).subscribeAsCompletionStage();
+                });
     }
+
 }

@@ -3,6 +3,7 @@ package com.codingplayground.springvertx.verticle;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.vertx.core.AbstractVerticle;
 import io.vertx.mutiny.ext.web.Router;
+import io.vertx.mutiny.pgclient.PgPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class MainVerticle extends AbstractVerticle {
     private final Integer serverPort;
 
     @Autowired
-    public MainVerticle(Router router, @Value("${vertx.spring.port}") Integer serverPort) {
+    public MainVerticle(Router router, @Value("${aspace-vertx.spring.port}") Integer serverPort) {
         this.router = router;
         this.serverPort = serverPort;
     }
@@ -34,5 +35,4 @@ public class MainVerticle extends AbstractVerticle {
                 .invoke(t -> LOGGER.log(Level.SEVERE, t.getMessage()))
                 .replaceWithVoid();
     }
-
 }
